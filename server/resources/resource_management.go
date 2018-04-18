@@ -564,8 +564,19 @@ func CreateResource(
 
 	//Validation
 
+	resource, err := manager.LoadResource(resourceSchema.ID, dataMap)
+	if err != nil {
+		return err
+	}
+	context["resource"] = resource.Data()
+
 	if _, ok := context["go_validation"]; ok {
-		err = resourceSchema.ValidateGoOnCreate(dataMap)
+		//Fillup default
+		err = resource.PopulateDefaults()
+		if err != nil {
+			return err
+		}
+		err = resourceSchema.ValidateOnCreate(dataMap)
 		if err != nil {
 			return ResourceError{err, fmt.Sprintf("Validation error: %s", err), WrongData}
 		}
@@ -574,17 +585,11 @@ func CreateResource(
 		if err != nil {
 			return ResourceError{err, fmt.Sprintf("Validation error: %s", err), WrongData}
 		}
-	}
-
-	resource, err := manager.LoadResource(resourceSchema.ID, dataMap)
-	if err != nil {
-		return err
-	}
-
-	//Fillup default
-	err = resource.PopulateDefaults()
-	if err != nil {
-		return err
+		//Fillup default
+		err = resource.PopulateDefaults()
+		if err != nil {
+			return err
+		}
 	}
 
 	context["resource"] = resource.Data()
