@@ -1,0 +1,3 @@
+schemas:
+   - "resources/exampleSchema1.yaml"
+   - "resources/exampleSchema2.yaml"

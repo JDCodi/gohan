@@ -1,0 +1,10 @@
+extensions:
+    - id: mySchema
+      code_type: goext
+      path: /testPath1
+      url: file://./dir2/qos.so
+    - id: mySchema2
+      code_type: goext
+      path: /testPath2
+      url: file://default_destination.js
+

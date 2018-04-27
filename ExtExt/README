@@ -1,0 +1,2 @@
+go build ./extension_extractor.go; ./extension_extractor ./resources/example.yaml ./output
+
