@@ -37,18 +37,22 @@ func Init(env goext.IEnvironment) error {
 
 func createNameAndInclude(yamlPath, url string) (name, include string, err error) {
 	start := strings.LastIndex(url, "/") + 1
-	startIncl := strings.Index(url, "./") + 2
-	if startIncl == 1 {
-		startIncl = strings.Index(url, "//") + 2
+	startIncl := strings.Index(url, "./") + 1
+	if startIncl == 0 {
+		startIncl = strings.Index(url, "//") + 1
 	}
 	end := strings.LastIndex(url, ".")
-	endUrl := strings.LastIndex(yamlPath, "/") + 1
+	endUrl := strings.LastIndex(yamlPath, "/")
+	endIncl := strings.LastIndex(url, "/")
 
-	if start == -1 || startIncl == -1 || end == -1 {
+	if start == -1 || startIncl == -1 || end == -1 || endIncl == -1 {
 		return "", "", fmt.Errorf("Could not extract name or include path")
 	}
+	if endIncl < startIncl {
+		endIncl = startIncl
+	}
 	name = url[start:end]
-	include = yamlPath[:endUrl] + url[startIncl:end]
+	include = yamlPath[:endUrl] + url[startIncl:endIncl]
 	return
 }
 
@@ -192,8 +196,10 @@ func main() {
 	}
 
 	res := parseInput(params[1])
-	if res != nil {
-		fmt.Printf("\nOut:\n%v\n\n", res)
-		createOutputFiles(res, params[2])
+	if res == nil {
+		fmt.Println("No input parsed, exiting")
+		return
 	}
+	fmt.Printf("\nOut:\n%v\n\n", res)
+	createOutputFiles(res, params[2])
 }
