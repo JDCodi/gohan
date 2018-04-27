@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -37,10 +38,8 @@ func Init(env goext.IEnvironment) error {
 
 func createNameAndInclude(yamlPath, url string) (name, include string, err error) {
 	start := strings.LastIndex(url, "/") + 1
-	startIncl := strings.Index(url, "./") + 1
-	if startIncl == 0 {
-		startIncl = strings.Index(url, "//") + 1
-	}
+	startIncl := strings.Index(url, "//") + 2
+
 	end := strings.LastIndex(url, ".")
 	endUrl := strings.LastIndex(yamlPath, "/")
 	endIncl := strings.LastIndex(url, "/")
@@ -52,7 +51,7 @@ func createNameAndInclude(yamlPath, url string) (name, include string, err error
 		endIncl = startIncl
 	}
 	name = url[start:end]
-	include = yamlPath[:endUrl] + url[startIncl:endIncl]
+	include = path.Join(yamlPath[:endUrl], url[startIncl:endIncl])
 	return
 }
 
